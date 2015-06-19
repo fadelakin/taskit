@@ -21,6 +21,7 @@ public class TaskListActivity extends AppCompatActivity {
 
     private static final String TAG = "TaskListActivity";
     private static final int EDIT_TASK_REQUEST = 10;
+    private static final int CREATE_TASK_REQUEST = 20;
 
     private ArrayList<Task> mTasks;
     private int mLastPositionClicked;
@@ -65,6 +66,10 @@ public class TaskListActivity extends AppCompatActivity {
             mTasks.set(mLastPositionClicked, task);
             mAdapter.notifyDataSetChanged();
             Log.d(TAG, task.getName());
+        } else if (requestCode == CREATE_TASK_REQUEST && resultCode == RESULT_OK) {
+            Task task = (Task) data.getSerializableExtra(TaskActivity.EXTRA);
+            mTasks.add(task);
+            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -102,7 +107,9 @@ public class TaskListActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.add_task_menu) {
+            Intent i = new Intent(TaskListActivity.this, TaskActivity.class);
+            startActivityForResult(i, CREATE_TASK_REQUEST);
             return true;
         }
 

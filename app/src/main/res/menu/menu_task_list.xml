@@ -3,8 +3,10 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".TaskListActivity">
 
-    <item android:title="@string/add_task"
-          android:orderInCategory="99"
-          android:icon="@android:drawable/ic_menu_add"
-          app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/add_task_menu"
+        android:title="@string/add_task"
+        android:orderInCategory="99"
+        android:icon="@android:drawable/ic_menu_add"
+        app:showAsAction="ifRoom"/>
 </menu>
