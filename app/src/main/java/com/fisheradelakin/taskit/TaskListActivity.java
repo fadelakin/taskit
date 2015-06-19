@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -27,6 +30,7 @@ public class TaskListActivity extends AppCompatActivity {
     private ArrayList<Task> mTasks;
     private int mLastPositionClicked;
     private TaskAdapter mAdapter;
+    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,23 +47,63 @@ public class TaskListActivity extends AppCompatActivity {
         mTasks.add(new Task());
         mTasks.get(2).setName("Task 3");
 
-        ListView listView = (ListView) findViewById(R.id.task_list);
+        mListView = (ListView) findViewById(R.id.task_list);
         mAdapter = new TaskAdapter(mTasks);
-        listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mLastPositionClicked = position;
                 Intent i = new Intent(TaskListActivity.this, TaskActivity.class);
-                Task task = (Task)parent.getAdapter().getItem(position);
+                Task task = (Task) parent.getAdapter().getItem(position);
                 i.putExtra(TaskActivity.EXTRA, task);
                 startActivityForResult(i, EDIT_TASK_REQUEST);
             }
         });
 
-        listView.getSelectedItemPosition();
+        mListView.getSelectedItemPosition();
 
-        registerForContextMenu(listView);
+        // contextual action bar when deleting an item
+        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                getMenuInflater().inflate(R.menu.menu_task_list_context, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                int id = item.getItemId();
+                SparseBooleanArray positions = mListView.getCheckedItemPositions();
+                if (id == R.id.delete_task) {
+                    for (int i = positions.size() - 1; i >= 0; i--) {
+                        if(positions.valueAt(i)) {
+                            mTasks.remove(positions.keyAt(i));
+                        }
+                    }
+                    mode.finish();
+                    mAdapter.notifyDataSetChanged();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+
+            }
+        });
     }
 
     @Override
