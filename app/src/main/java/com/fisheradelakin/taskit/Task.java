@@ -1,11 +1,12 @@
 package com.fisheradelakin.taskit;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Fisher on 6/18/15.
  */
-public class Task {
+public class Task implements Serializable {
     private String mName;
     private Date mDueDate;
     private boolean mDone;
