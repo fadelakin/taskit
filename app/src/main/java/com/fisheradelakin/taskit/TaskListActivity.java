@@ -61,15 +61,28 @@ public class TaskListActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == EDIT_TASK_REQUEST && resultCode == RESULT_OK) {
-            Task task = (Task) data.getSerializableExtra(TaskActivity.EXTRA);
-            mTasks.set(mLastPositionClicked, task);
-            mAdapter.notifyDataSetChanged();
-            Log.d(TAG, task.getName());
-        } else if (requestCode == CREATE_TASK_REQUEST && resultCode == RESULT_OK) {
-            Task task = (Task) data.getSerializableExtra(TaskActivity.EXTRA);
-            mTasks.add(task);
-            mAdapter.notifyDataSetChanged();
+        switch(requestCode) {
+            case EDIT_TASK_REQUEST:
+                if(resultCode == RESULT_OK) {
+                    Task task = (Task) data.getSerializableExtra(TaskActivity.EXTRA);
+                    mTasks.set(mLastPositionClicked, task);
+                    mAdapter.notifyDataSetChanged();
+                    Log.d(TAG, task.getName());
+                } else {
+                    Log.d(TAG, "Something went wrong.");
+                }
+                break;
+            case CREATE_TASK_REQUEST:
+                if(resultCode == RESULT_OK) {
+                    Task task = (Task) data.getSerializableExtra(TaskActivity.EXTRA);
+                    mTasks.add(task);
+                    mAdapter.notifyDataSetChanged();
+                } else {
+                    Log.d(TAG, "Something went wrong");
+                }
+                break;
+            default:
+                break;
         }
     }
 
